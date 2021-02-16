@@ -1,14 +1,5 @@
 import React, { useReducer } from 'react';
-
-interface IState {
-	episodes: Array<any>;
-	favorites: Array<any>;
-}
-
-export interface IAction {
-	type: string;
-	payload: any;
-}
+import { IAction, IState } from '../interfaces/interfaces';
 
 const initialState: IState = {
 	episodes: [],
@@ -18,13 +9,15 @@ const initialState: IState = {
 export const Store = React.createContext<IState | any>(initialState);
 
 function reducer(state: IState, action: IAction): IState {
+	console.log(action.payload);
 	switch (action.type) {
 		case 'FETCH_DATA':
 			return { ...state, episodes: action.payload };
 		case 'ADD_FAV':
-			return { ...state, favorites: [ ...state.favorites, ...action.payload ] };
+			return { ...state, favorites: [ ...state.favorites, action.payload ] };
 		case 'REMOVE_FAV':
-			return { ...state, favorites: [ ...action.payload ] };
+			return { ...state, favorites: [ action.payload ] };
+
 		default:
 			return state;
 	}

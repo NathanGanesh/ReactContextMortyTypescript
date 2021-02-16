@@ -1,21 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Store, IAction } from './stores/Store';
-
+import { Store } from './stores/Store';
+import { IAction, IEpisode, IState } from './interfaces/interfaces';
 function App(): JSX.Element {
 	const { state, dispatch } = React.useContext(Store);
-	interface IEpisode {
-		id: number;
-		url: string;
-		name: string;
-		season: number;
-		number: number;
-		airdate: string;
-		airtime: string;
-		airstamp: string;
-		runtime: number;
-		image: { medium: string; original: string };
-		summary: string;
-	}
+
 	useEffect(() => {
 		state.episodes.length === 0 && fetchDataAction();
 	}, []);
@@ -30,12 +18,27 @@ function App(): JSX.Element {
 		});
 	};
 
-	const toggleFavAction = (episode: IEpisode): IAction =>
-		dispatch({
+	const toggleFavAction = (episode: IEpisode): IAction => {
+		console.log(state);
+
+		const episodeInFav = state.favorites.includes(episode);
+		let dispatchObj = {
 			type: 'ADD_FAV',
 			payload: episode
-		});
+		};
 
+		if (episodeInFav) {
+			const favWithoutEpisode = state.favorites.filter((fav: IEpisode) => fav.id !== episode.id);
+			dispatchObj = {
+				type: 'REMOVE_FAV',
+				payload: favWithoutEpisode
+			};
+		}
+
+		return dispatch(dispatchObj);
+	};
+
+	console.log(state);
 	return (
 		<Fragment>
 			<header className="header">
@@ -53,7 +56,7 @@ function App(): JSX.Element {
 									Season:{episode.season} Number:{episode.number}
 								</div>
 								<button type="button" onClick={() => toggleFavAction(episode)}>
-									Fav
+									{state.favorites.find((fav: IEpisode) => fav.id === episode.id) ? 'Unfav' : 'Fav'}
 								</button>
 							</section>
 						</section>
